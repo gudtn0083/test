@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <opencv2/core/core_c.h>
 #include <opencv2/highgui/highgui_c.h>
+#include <opencv2/imgproc/imgproc_c.h>
 
 int main(int argc, char *argv[])
 {
@@ -41,6 +42,18 @@ int main(int argc, char *argv[])
         printf("이진 이미지가 저장되었습니다: %s\n", outputPath);
     }
 
+    /* 엣지(테두리) 추출 */
+    IplImage *edges = cvCreateImage(cvGetSize(gray), IPL_DEPTH_8U, 1);
+    cvCanny(gray, edges, 50, 150, 3); /* 기본 하위/상위 임계값 50/150 */
+
+    /* 엣지 이미지 저장 */
+    const char *edgePath = "edges_output.png";
+    if (!cvSaveImage(edgePath, edges, 0)) {
+        fprintf(stderr, "엣지 이미지 저장 실패: %s\n", edgePath);
+    } else {
+        printf("엣지 이미지가 저장되었습니다: %s\n", edgePath);
+    }
+
     /* 결과 정보 출력 */
     printf("원본 파일 : %s\n", filePath);
     printf("가로(px) : %d\n", gray->width);
@@ -51,13 +64,17 @@ int main(int argc, char *argv[])
     /* 화면에 표시 (선택 사항) */
     cvNamedWindow("Binary Image", CV_WINDOW_AUTOSIZE);
     cvShowImage("Binary Image", binary);
+    cvNamedWindow("Edge Image", CV_WINDOW_AUTOSIZE);
+    cvShowImage("Edge Image", edges);
     printf("윈도우를 닫으면 프로그램이 종료됩니다...\n");
     cvWaitKey(0);
 
     /* 메모리 해제 */
     cvReleaseImage(&gray);
     cvReleaseImage(&binary);
+    cvReleaseImage(&edges);
     cvDestroyWindow("Binary Image");
+    cvDestroyWindow("Edge Image");
 
     return 0;
 }
