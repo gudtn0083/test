@@ -40,6 +40,9 @@ Command-line arguments:
 | `--tree_density` | 0.6 | Initial proportion of cells containing trees |
 | `--p_lightning` | 0.0001 | Probability that a tree ignites spontaneously each step |
 | `--p_tree_growth` | 0.01 | Probability that an empty cell regrows a tree each step |
+| `--p_fire_spread` | 1.0 | Base probability a burning neighbour sets a tree on fire (before wind) |
+| `--wind_direction` | None | Wind direction (N, NE, E, SE, S, SW, W, NW) |
+| `--wind_strength` | 0.2 | Amount added/subtracted from base spread probability down/up-wind (0-1) |
 | `--steps` | 200 | Number of animation frames |
 | `--interval` | 50 | Delay between frames in milliseconds |
 
