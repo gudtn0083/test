@@ -1,4 +1,6 @@
 import cv2
+import matplotlib
+matplotlib.use('Agg')  # GUI가 없는 환경에서 사용
 import matplotlib.pyplot as plt
 
 def convert_image_to_binary(image_path):

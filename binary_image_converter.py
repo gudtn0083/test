@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')  # GUI가 없는 환경에서 사용
 import matplotlib.pyplot as plt
 from PIL import Image
 
