@@ -1,0 +1,14 @@
+# 이메일 테스트 설정 파일
+# 보안을 위해 실제 사용시에는 환경변수를 사용하세요.
+
+# Gmail 설정 예시
+SMTP_SERVER = "smtp.gmail.com"
+SMTP_PORT = 587
+SENDER_EMAIL = "your-email@gmail.com"
+SENDER_PASSWORD = "your-app-password"  # Gmail 앱 비밀번호
+RECIPIENT_EMAIL = "recipient@example.com"
+
+# 다른 이메일 서비스 설정
+# Outlook: smtp-mail.outlook.com:587
+# Yahoo: smtp.mail.yahoo.com:587
+# Naver: smtp.naver.com:587
