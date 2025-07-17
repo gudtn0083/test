@@ -23,6 +23,9 @@ import cv2  # type: ignore
 import pytesseract
 from pytesseract import Output
 
+BOLD = "\033[1m"
+RESET = "\033[0m"
+
 
 def parse_args() -> argparse.Namespace:
     """Parse command-line arguments."""
@@ -117,11 +120,11 @@ def main() -> None:
 
     # Print recognised text lines
     if results:
-        print("Detected text (confidence >= {}):".format(args.min_confidence))
+        print(f"{BOLD}Detected text (confidence >= {args.min_confidence}):{RESET}")
         for r in results:
-            print(" - {:s} (conf={:d})".format(r["text"], r["conf"]))
+            print(f" - {BOLD}{r['text']}{RESET} (conf={r['conf']})")
     else:
-        print("No text detected with the given confidence threshold.")
+        print(f"{BOLD}No text detected with the given confidence threshold.{RESET}")
 
     if args.visualise:
         image_with_boxes = draw_boxes(image.copy(), results)
