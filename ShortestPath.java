@@ -16,6 +16,13 @@ class Node {
         this.id = id;
         this.pos = pos;
     }
+    @Override public boolean equals(Object o) {
+        if(this == o) return true;
+        if(!(o instanceof Node)) return false;
+        Node n = (Node) o;
+        return java.util.Objects.equals(id, n.id);
+    }
+    @Override public int hashCode() { return java.util.Objects.hash(id); }
 }
 
 class Edge {
@@ -92,17 +99,107 @@ class Graph {
     }
 }
 
+// Domain model ----------------------------------------------------
+enum ArrowDirection { STRAIGHT, RIGHT, LEFT, EXIT_RIGHT, EXIT_LEFT }
+
+class AircraftInfo {
+    Double speedKmh; // nullable
+    String color;
+    AircraftInfo(Double speedKmh, String color) {
+        this.speedKmh = speedKmh;
+        this.color = color;
+    }
+}
+
+class Destination {
+    String koName;
+    String enName;
+    double distanceKm;
+    ArrowDirection arrow;
+    AircraftInfo aircraft; // optional
+    Destination(String koName, String enName, double distanceKm, ArrowDirection arrow, AircraftInfo aircraft) {
+        this.koName = koName;
+        this.enName = enName;
+        this.distanceKm = distanceKm;
+        this.arrow = arrow;
+        this.aircraft = aircraft;
+    }
+}
+
+class SignStyle {
+    int widthMm;
+    int heightMm;
+    String background;
+    boolean hasExitNumber;
+    SignStyle(int widthMm, int heightMm, String background, boolean hasExitNumber) {
+        this.widthMm = widthMm;
+        this.heightMm = heightMm;
+        this.background = background;
+        this.hasExitNumber = hasExitNumber;
+    }
+}
+
+class RoadSign {
+    private String signId;
+    private int laneCount;
+    private java.util.List<Destination> destinations = new java.util.ArrayList<>();
+    private GeoPosition gps;
+    private SignStyle style;
+    RoadSign(String signId, int laneCount, GeoPosition gps, SignStyle style) {
+        this.signId = signId;
+        this.laneCount = laneCount;
+        this.gps = gps;
+        this.style = style;
+    }
+    void addDestination(Destination d) { destinations.add(d); }
+    String getSignId() { return signId; }
+    GeoPosition getGps() { return gps; }
+    @Override public String toString() { return signId; }
+}
+// ----------------------------------------------------------------
+
 public class ShortestPath {
     public static void main(String[] args) {
-        // Demo with two road signs: Gaehwa JC -> Incheon Airport
-        Node gaehwaSign = new Node("GAE_JC", new GeoPosition(37.5699, 126.8105));
-        Node incheonAirportSign = new Node("ICN_APT", new GeoPosition(37.4602, 126.4407));
+        // 1. Build some road signs along the route to Incheon Airport
+        RoadSign seoul = new RoadSign("SEOUL_CEN", 5,
+                new GeoPosition(37.5665, 126.9780),
+                new SignStyle(6000, 2800, "green", false));
+        seoul.addDestination(new Destination("서울", "Seoul", -1, ArrowDirection.STRAIGHT, null));
+
+        RoadSign gaehwa = new RoadSign("GAEHWA_JC", 3,
+                new GeoPosition(37.5699, 126.8105),
+                new SignStyle(6000, 2800, "green", false));
+        gaehwa.addDestination(new Destination("강남·광주", "Gangnam / Gwangju", -1, ArrowDirection.RIGHT, null));
+
+        RoadSign unseo = new RoadSign("UNSEO_IC", 3,
+                new GeoPosition(37.4925, 126.4932),
+                new SignStyle(6000, 2800, "green", false));
+        unseo.addDestination(new Destination("운서", "Unseo", -1, ArrowDirection.STRAIGHT, null));
+
+        RoadSign incheonAirport = new RoadSign("ICN_APT", 4,
+                new GeoPosition(37.4602, 126.4407),
+                new SignStyle(8000, 3000, "green", false));
+        incheonAirport.addDestination(new Destination("인천공항", "Incheon Airport", 0,
+                ArrowDirection.STRAIGHT,
+                new AircraftInfo(900.0, "white-blue")));
+
+        // 2. Convert to graph nodes
+        Node nSeoul = new Node(seoul.getSignId(), seoul.getGps());
+        Node nGaehwa = new Node(gaehwa.getSignId(), gaehwa.getGps());
+        Node nUnseo = new Node(unseo.getSignId(), unseo.getGps());
+        Node nAirport = new Node(incheonAirport.getSignId(), incheonAirport.getGps());
+
+        // 3. Build graph (simple linear path for demo)
         Graph g = new Graph();
-        g.addUndirectedEdge(gaehwaSign, incheonAirportSign);
-        List<Node> path = g.shortestPath(gaehwaSign, incheonAirportSign);
-        System.out.println("Shortest path:");
+        g.addUndirectedEdge(nSeoul, nGaehwa);
+        g.addUndirectedEdge(nGaehwa, nUnseo);
+        g.addUndirectedEdge(nUnseo, nAirport);
+
+        // 4. Compute shortest path
+        java.util.List<Node> path = g.shortestPath(nSeoul, nAirport);
+        System.out.println("=== Navigation Seoul → Incheon Airport ===");
         for(Node n : path) {
-            System.out.println(n.id);
+            System.out.println("• " + n.id);
         }
     }
 }
