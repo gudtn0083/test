@@ -48,6 +48,7 @@ You can omit `--password` and the script will securely prompt for it at runtime.
 * `--body`: Plain-text email body (required)
 * `--attachment`: Zero or more file paths to attach
 * `--no-tls`: Disable STARTTLS (not recommended)
+* `--save`: Path to save the raw email in RFC 5322 (.eml) format (optional)
 
 ## License
 

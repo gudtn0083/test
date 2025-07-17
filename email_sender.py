@@ -112,6 +112,11 @@ def parse_args(argv: List[str] | None = None) -> argparse.Namespace:  # noqa: D4
         help="Paths to files to attach (optional)",
     )
     parser.add_argument(
+        "--save",
+        type=Path,
+        help="Optional path to save the raw email (.eml) before sending",
+    )
+    parser.add_argument(
         "--no-tls",
         dest="use_tls",
         action="store_false",
@@ -132,6 +137,16 @@ def main(argv: List[str] | None = None) -> None:
         body=args.body,
         attachments=args.attachment,
     )
+
+    # Optionally save the email to disk
+    if args.save:
+        try:
+            args.save.parent.mkdir(parents=True, exist_ok=True)
+            with args.save.open("wb") as fp:
+                fp.write(msg.as_bytes())
+            print(f"Email saved to {args.save}")
+        except Exception as exc:
+            print(f"Warning: Could not save email to {args.save}: {exc}", file=sys.stderr)
 
     try:
         send_email(
