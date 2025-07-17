@@ -25,6 +25,7 @@ import os
 import smtplib
 import sys
 from email.message import EmailMessage
+from email.utils import make_msgid
 from pathlib import Path
 from typing import List
 
@@ -35,6 +36,7 @@ def build_email(
     subject: str,
     body: str,
     attachments: List[Path] | None = None,
+    inline_images: List[Path] | None = None,
 ) -> EmailMessage:
     """Construct an EmailMessage.
 
@@ -52,8 +54,51 @@ def build_email(
     msg["From"] = sender
     msg["To"] = ", ".join(recipients)
     msg["Subject"] = subject
+    # Plain-text part
     msg.set_content(body)
 
+    # ------------------------------------------------------------------
+    # HTML + inline images
+    # ------------------------------------------------------------------
+    inline_images = inline_images or []
+    cid_map: dict[Path, str] = {}
+
+    if inline_images:
+        html_body = [f"<p>{body.replace('\n', '<br>')}</p>"]
+
+        # Reserve content-IDs first so we can reference them in HTML before attaching.
+        for p in inline_images:
+            cid = make_msgid()[1:-1]  # strip <>
+            cid_map[p] = cid
+            html_body.append(f'<img src="cid:{cid}" alt="{p.name}">')
+        html = "\n".join(html_body)
+
+        # add alternative HTML part
+        msg.add_alternative(f"<html><body>{html}</body></html>", subtype="html")
+
+        # Last payload is the HTML part we just added
+        html_part = msg.get_payload()[-1]
+
+        for img_path in inline_images:
+            if not img_path.exists():
+                print(f"Warning: inline image {img_path} does not exist and will be skipped.", file=sys.stderr)
+                continue
+            ctype, _ = mimetypes.guess_type(img_path)
+            maintype, subtype = (ctype or "application/octet-stream").split("/", 1)
+            with img_path.open("rb") as fp:
+                data = fp.read()
+            # cid must be enclosed in angle brackets per RFC
+            html_part.add_related(
+                data,
+                maintype=maintype,
+                subtype=subtype,
+                cid=f"<{cid_map[img_path]}>",
+                filename=img_path.name,
+            )
+
+    # ------------------------------------------------------------------
+    # Regular file attachments (not inline)
+    # ------------------------------------------------------------------
     for path in attachments or []:
         if not path.exists():
             print(f"Warning: attachment {path} does not exist and will be skipped.", file=sys.stderr)
@@ -112,6 +157,13 @@ def parse_args(argv: List[str] | None = None) -> argparse.Namespace:  # noqa: D4
         help="Paths to files to attach (optional)",
     )
     parser.add_argument(
+        "--inline-image",
+        nargs="*",
+        default=[],
+        type=Path,
+        help="Paths to images to embed inline in the HTML body (optional)",
+    )
+    parser.add_argument(
         "--save",
         type=Path,
         help="Optional path to save the raw email (.eml) before sending",
@@ -136,6 +188,7 @@ def main(argv: List[str] | None = None) -> None:
         subject=args.subject,
         body=args.body,
         attachments=args.attachment,
+        inline_images=args.inline_image,
     )
 
     # Optionally save the email to disk

@@ -35,7 +35,7 @@ python email_sender.py \
   --attachment ./report.pdf ./chart.png
 ```
 
-You can omit `--password` and the script will securely prompt for it at runtime.
+You can omit `--password` and the script will securely prompt for it at runtime.  When using `--inline-image`, the script automatically generates a simple HTML body that embeds each inline image via `cid:` references so most modern email clients will render them inside the message.
 
 ### Flags
 
@@ -49,6 +49,7 @@ You can omit `--password` and the script will securely prompt for it at runtime.
 * `--attachment`: Zero or more file paths to attach
 * `--no-tls`: Disable STARTTLS (not recommended)
 * `--save`: Path to save the raw email in RFC 5322 (.eml) format (optional)
+* `--inline-image`: Paths to image files that should be embedded inline in the HTML body (optional)
 
 ## License
 
