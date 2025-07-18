@@ -4,6 +4,9 @@ from pathlib import Path
 import cv2
 import pytesseract
 
+# New import for translation
+from googletrans import Translator
+
 
 # Adjust this path if Tesseract is not in the default location on your system.
 # For most Linux distributions where tesseract is installed via apt (sudo apt install tesseract-ocr),
@@ -42,6 +45,25 @@ def ocr_korean(image_path: Path) -> str:
     return text.strip()
 
 
+# New helper for translation
+def translate_to_english(text: str) -> str:
+    """Translate given text to English using googletrans.
+
+    If translation fails, returns the original text.
+    """
+    if not text:
+        return ""
+
+    try:
+        translator = Translator()
+        translation = translator.translate(text, dest="en")
+        return translation.text
+    except Exception as e:
+        # Gracefully handle translation errors
+        print(f"[Warning] Translation failed: {e}")
+        return text
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python ocr_korean.py <image_path>")
@@ -52,3 +74,8 @@ if __name__ == "__main__":
 
     print("Extracted text:")
     print(extracted)
+
+    english_text = translate_to_english(extracted)
+    if english_text and english_text != extracted:
+        print("\nTranslated to English:")
+        print(english_text)
