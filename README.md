@@ -59,6 +59,7 @@ You can omit `--password` and the script will securely prompt for it at runtime.
 * `--no-tls`: Disable STARTTLS (not recommended)
 * `--save`: Path to save the raw email in RFC 5322 (.eml) format (optional)
 * `--inline-image`: Paths to image files that should be embedded inline in the HTML body (optional)
+* `--header-image`: Single image to embed at the very top of the HTML body as a logo/header (optional)
 
 ## License
 

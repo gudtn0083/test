@@ -46,6 +46,7 @@ def build_email(
     body: str,
     attachments: List[Path] | None = None,
     inline_images: List[Path] | None = None,
+    header_image: Path | None = None,
     cc_recipients: List[str] | None = None,
     bcc_recipients: List[str] | None = None,
     is_markdown: bool = False,
@@ -99,11 +100,29 @@ def build_email(
         # Either markdown was not requested or conversion not available.
         html_body_str = f"<p>{html_escape(body).replace('\n', '<br>')}</p>"
 
+    # ------------------------------------------------------------------
+    # Header image handling
+    # ------------------------------------------------------------------
+    if header_image:
+        inline_images = inline_images or []  # ensure not None
+        if header_image not in inline_images:
+            inline_images.insert(0, header_image)
+
     if inline_images:
-        html_lines = [html_body_str]
+        html_lines = []
+
+        # If header_image is first inline image, place it before body
+        if header_image:
+            cid_header = make_msgid()[1:-1]
+            cid_map[header_image] = cid_header
+            html_lines.append(f'<div style="text-align:center; margin-bottom:16px;"><img src="cid:{cid_header}" alt="{header_image.name}"></div>')
+
+        html_lines.append(html_body_str)
 
         # Reserve content-IDs first so we can reference them in HTML before attaching.
         for p in inline_images:
+            if p in cid_map:
+                continue  # header image already assigned
             cid = make_msgid()[1:-1]  # strip <>
             cid_map[p] = cid
             html_lines.append(f'<img src="cid:{cid}" alt="{p.name}">')
@@ -218,6 +237,11 @@ def parse_args(argv: List[str] | None = None) -> argparse.Namespace:  # noqa: D4
         help="Paths to images to embed inline in the HTML body (optional)",
     )
     parser.add_argument(
+        "--header-image",
+        type=Path,
+        help="Image to embed at the top of the HTML body as a header (optional)",
+    )
+    parser.add_argument(
         "--save",
         type=Path,
         help="Optional path to save the raw email (.eml) before sending",
@@ -243,6 +267,7 @@ def main(argv: List[str] | None = None) -> None:
         body=args.body,
         attachments=args.attachment,
         inline_images=args.inline_image,
+        header_image=args.header_image,
         cc_recipients=args.cc,
         bcc_recipients=args.bcc,
         is_markdown=args.markdown,
