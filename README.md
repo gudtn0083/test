@@ -46,6 +46,8 @@ You can omit `--password` and the script will securely prompt for it at runtime.
 * `--to`: One or more recipient email addresses (required)
 * `--subject`: Email subject line (required)
 * `--body`: Plain-text email body (required)
+* `--cc`: Zero or more CC recipients
+* `--bcc`: Zero or more BCC recipients
 * `--attachment`: Zero or more file paths to attach
 * `--no-tls`: Disable STARTTLS (not recommended)
 * `--save`: Path to save the raw email in RFC 5322 (.eml) format (optional)

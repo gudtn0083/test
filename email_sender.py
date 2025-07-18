@@ -37,6 +37,8 @@ def build_email(
     body: str,
     attachments: List[Path] | None = None,
     inline_images: List[Path] | None = None,
+    cc_recipients: List[str] | None = None,
+    bcc_recipients: List[str] | None = None,
 ) -> EmailMessage:
     """Construct an EmailMessage.
 
@@ -53,6 +55,13 @@ def build_email(
     msg = EmailMessage()
     msg["From"] = sender
     msg["To"] = ", ".join(recipients)
+    cc_recipients = cc_recipients or []
+    bcc_recipients = bcc_recipients or []
+
+    if cc_recipients:
+        msg["Cc"] = ", ".join(cc_recipients)
+    if bcc_recipients:
+        msg["Bcc"] = ", ".join(bcc_recipients)
     msg["Subject"] = subject
     # Plain-text part
     msg.set_content(body)
@@ -117,6 +126,7 @@ def send_email(
     smtp_port: int,
     username: str,
     password: str,
+    recipients: List[str],
     use_tls: bool = True,
 ) -> None:
     """Send EmailMessage via SMTP.
@@ -135,7 +145,7 @@ def send_email(
             server.starttls()
             server.ehlo()
         server.login(username, password)
-        server.send_message(msg)
+        server.send_message(msg, from_addr=username, to_addrs=recipients)
         print("Email sent successfully.")
 
 
@@ -148,6 +158,18 @@ def parse_args(argv: List[str] | None = None) -> argparse.Namespace:  # noqa: D4
     parser.add_argument("--password", help="SMTP password (will prompt if omitted)")
     parser.add_argument("--to", nargs="+", required=True, help="Recipient email addresses (space-separated)")
     parser.add_argument("--subject", required=True, help="Email subject")
+    parser.add_argument(
+        "--cc",
+        nargs="*",
+        default=[],
+        help="CC (carbon copy) recipient email addresses",
+    )
+    parser.add_argument(
+        "--bcc",
+        nargs="*",
+        default=[],
+        help="BCC (blind carbon copy) recipient email addresses",
+    )
     parser.add_argument("--body", required=True, help="Plain text email body")
     parser.add_argument(
         "--attachment",
@@ -189,7 +211,12 @@ def main(argv: List[str] | None = None) -> None:
         body=args.body,
         attachments=args.attachment,
         inline_images=args.inline_image,
+        cc_recipients=args.cc,
+        bcc_recipients=args.bcc,
     )
+
+    # Combine recipients for SMTP envelope
+    all_recipients = args.to + args.cc + args.bcc
 
     # Optionally save the email to disk
     if args.save:
@@ -208,6 +235,7 @@ def main(argv: List[str] | None = None) -> None:
             smtp_port=args.smtp_port,
             username=args.username,
             password=password,
+            recipients=all_recipients,
             use_tls=args.use_tls,
         )
     except Exception as exc:
