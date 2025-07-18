@@ -21,6 +21,12 @@ pip install --upgrade pip
 
 No external packages are required.
 
+If you want to use Markdown conversion (`--markdown` flag), install the optional dependency:
+
+```bash
+pip install markdown
+```
+
 ## Usage
 
 ```bash
@@ -46,6 +52,7 @@ You can omit `--password` and the script will securely prompt for it at runtime.
 * `--to`: One or more recipient email addresses (required)
 * `--subject`: Email subject line (required)
 * `--body`: Plain-text email body (required)
+* `--markdown`: Treat `--body` as Markdown and automatically convert to HTML
 * `--cc`: Zero or more CC recipients
 * `--bcc`: Zero or more BCC recipients
 * `--attachment`: Zero or more file paths to attach

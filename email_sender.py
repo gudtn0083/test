@@ -24,10 +24,19 @@ import mimetypes
 import os
 import smtplib
 import sys
+from html import escape as html_escape
 from email.message import EmailMessage
 from email.utils import make_msgid
 from pathlib import Path
 from typing import List
+
+# Optional Markdown support (requires the `markdown` package)
+try:
+    import markdown  # type: ignore
+
+    _markdown_available = True
+except ModuleNotFoundError:  # pragma: no cover – graceful degradation
+    _markdown_available = False
 
 
 def build_email(
@@ -39,6 +48,7 @@ def build_email(
     inline_images: List[Path] | None = None,
     cc_recipients: List[str] | None = None,
     bcc_recipients: List[str] | None = None,
+    is_markdown: bool = False,
 ) -> EmailMessage:
     """Construct an EmailMessage.
 
@@ -63,7 +73,10 @@ def build_email(
     if bcc_recipients:
         msg["Bcc"] = ", ".join(bcc_recipients)
     msg["Subject"] = subject
-    # Plain-text part
+    # ------------------------------------------------------------------
+    # Plain-text part: if the original body is Markdown we still send the raw
+    # Markdown in the text/plain part for maximum compatibility.
+    # ------------------------------------------------------------------
     msg.set_content(body)
 
     # ------------------------------------------------------------------
@@ -72,15 +85,29 @@ def build_email(
     inline_images = inline_images or []
     cid_map: dict[Path, str] = {}
 
+    html_body_str: str | None = None
+
+    if is_markdown and _markdown_available:
+        try:
+            html_body_str = markdown.markdown(body)
+        except Exception as exc:  # pragma: no cover – shouldn't normally fail
+            print(f"Warning: Markdown conversion failed: {exc}. Falling back to plain HTML.", file=sys.stderr)
+    elif is_markdown and not _markdown_available:
+        print("Warning: --markdown specified but the 'markdown' package is not installed. Falling back to simple HTML conversion.", file=sys.stderr)
+
+    if html_body_str is None:
+        # Either markdown was not requested or conversion not available.
+        html_body_str = f"<p>{html_escape(body).replace('\n', '<br>')}</p>"
+
     if inline_images:
-        html_body = [f"<p>{body.replace('\n', '<br>')}</p>"]
+        html_lines = [html_body_str]
 
         # Reserve content-IDs first so we can reference them in HTML before attaching.
         for p in inline_images:
             cid = make_msgid()[1:-1]  # strip <>
             cid_map[p] = cid
-            html_body.append(f'<img src="cid:{cid}" alt="{p.name}">')
-        html = "\n".join(html_body)
+            html_lines.append(f'<img src="cid:{cid}" alt="{p.name}">')
+        html = "\n".join(html_lines)
 
         # add alternative HTML part
         msg.add_alternative(f"<html><body>{html}</body></html>", subtype="html")
@@ -170,6 +197,11 @@ def parse_args(argv: List[str] | None = None) -> argparse.Namespace:  # noqa: D4
         default=[],
         help="BCC (blind carbon copy) recipient email addresses",
     )
+    parser.add_argument(
+        "--markdown",
+        action="store_true",
+        help="Treat the --body text as Markdown and convert it to HTML",
+    )
     parser.add_argument("--body", required=True, help="Plain text email body")
     parser.add_argument(
         "--attachment",
@@ -213,6 +245,7 @@ def main(argv: List[str] | None = None) -> None:
         inline_images=args.inline_image,
         cc_recipients=args.cc,
         bcc_recipients=args.bcc,
+        is_markdown=args.markdown,
     )
 
     # Combine recipients for SMTP envelope
