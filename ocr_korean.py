@@ -45,22 +45,22 @@ def ocr_korean(image_path: Path) -> str:
     return text.strip()
 
 
-# New helper for translation
-def translate_to_english(text: str) -> str:
-    """Translate given text to English using googletrans.
+# Generalized translator helper
+def translate_text(text: str, dest: str) -> str:
+    """Translate text to a target language (dest) using googletrans.
 
     If translation fails, returns the original text.
     """
+
     if not text:
         return ""
 
     try:
         translator = Translator()
-        translation = translator.translate(text, dest="en")
+        translation = translator.translate(text, dest=dest)
         return translation.text
     except Exception as e:
-        # Gracefully handle translation errors
-        print(f"[Warning] Translation failed: {e}")
+        print(f"[Warning] Translation to '{dest}' failed: {e}")
         return text
 
 
@@ -75,7 +75,13 @@ if __name__ == "__main__":
     print("Extracted text:")
     print(extracted)
 
-    english_text = translate_to_english(extracted)
-    if english_text and english_text != extracted:
-        print("\nTranslated to English:")
-        print(english_text)
+    # Translate to English and Japanese
+    translations = {
+        "English": translate_text(extracted, "en"),
+        "Japanese": translate_text(extracted, "ja"),
+    }
+
+    for lang, trans in translations.items():
+        if trans and trans != extracted:
+            print(f"\nTranslated to {lang}:")
+            print(trans)
