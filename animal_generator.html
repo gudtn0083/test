@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>귀여운 동물 생성기</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        h1 {
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .animals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .animal-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .animal-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .animal-name {
+            margin-top: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .controls {
+            background: rgba(255,255,255,0.9);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px;
+            transition: background 0.3s ease;
+        }
+        
+        button:hover {
+            background: #45a049;
+        }
+        
+        .random-btn {
+            background: #ff6b6b;
+        }
+        
+        .random-btn:hover {
+            background: #ee5a5a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐾 귀여운 동물 생성기 🐾</h1>
+        
+        <div class="animals-grid" id="animalsGrid">
+            <!-- 동물들이 여기에 생성됩니다 -->
+        </div>
+        
+        <div class="controls">
+            <button onclick="generateSpecificAnimal('bear')">곰 🐻</button>
+            <button onclick="generateSpecificAnimal('cat')">고양이 🐱</button>
+            <button onclick="generateSpecificAnimal('dog')">강아지 🐶</button>
+            <button onclick="generateSpecificAnimal('rabbit')">토끼 🐰</button>
+            <button onclick="generateSpecificAnimal('fox')">여우 🦊</button>
+            <button onclick="generateSpecificAnimal('panda')">판다 🐼</button>
+            <button onclick="generateSpecificAnimal('pig')">돼지 🐷</button>
+            <button onclick="generateSpecificAnimal('frog')">개구리 🐸</button>
+            <button class="random-btn" onclick="generateRandomAnimals()">랜덤 생성! 🎲</button>
+            <button onclick="clearAnimals()">지우기 🗑️</button>
+        </div>
+    </div>
+
+    <script>
+        const animalTemplates = {
+            bear: {
+                name: '곰',
+                colors: {
+                    main: '#8B4513',
+                    secondary: '#A0522D',
+                    inner: '#DEB887'
+                },
+                generateSVG: function(colors) {
+                    return `
+                        <svg width="150" height="150" viewBox="0 0 150 150">
+                            <!-- 머리 -->
+                            <circle cx="75" cy="70" r="45" fill="${colors.main}"/>
+                            <circle cx="75" cy="70" r="35" fill="${colors.secondary}"/>
+                            
+                            <!-- 귀 -->
+                            <circle cx="50" cy="45" r="18" fill="${colors.main}"/>
+                            <circle cx="100" cy="45" r="18" fill="${colors.main}"/>
+                            <circle cx="50" cy="45" r="12" fill="${colors.inner}"/>
+                            <circle cx="100" cy="45" r="12" fill="${colors.inner}"/>
+                            
+                            <!-- 눈 -->
+                            <circle cx="60" cy="60" r="8" fill="white"/>
+                            <circle cx="90" cy="60" r="8" fill="white"/>
+                            <circle cx="60" cy="60" r="5" fill="black"/>
+                            <circle cx="90" cy="60" r="5" fill="black"/>
+                            
+                            <!-- 코와 입 -->
+                            <ellipse cx="75" cy="75" rx="4" ry="3" fill="black"/>
+                            <path d="M 75 78 Q 70 85 65 82" stroke="black" stroke-width="2" fill="none"/>
+                            <path d="M 75 78 Q 80 85 85 82" stroke="black" stroke-width="2" fill="none"/>
+                            
+                            <!-- 몸 -->
+                            <ellipse cx="75" cy="125" rx="30" ry="20" fill="${colors.main}"/>
+                        </svg>
+                    `;
+                }
+            },
+            
+            cat: {
+                name: '고양이',
+                colors: {
+                    main: '#FFA500',
+                    secondary: '#FFB84D',
+                    inner: '#FFF8DC'
+                },
+                generateSVG: function(colors) {
+                    return `
+                        <svg width="150" height="150" viewBox="0 0 150 150">
+                            <!-- 머리 -->
+                            <circle cx="75" cy="70" r="40" fill="${colors.main}"/>
+                            
+                            <!-- 귀 (삼각형) -->
+                            <polygon points="45,35 35,15 55,25" fill="${colors.main}"/>
+                            <polygon points="105,35 95,15 115,25" fill="${colors.main}"/>
+                            <polygon points="45,32 40,20 50,25" fill="${colors.inner}"/>
+                            <polygon points="105,32 100,20 110,25" fill="${colors.inner}"/>
+                            
+                            <!-- 얼굴 패턴 -->
+                            <ellipse cx="75" cy="75" rx="25" ry="20" fill="${colors.secondary}"/>
+                            
+                            <!-- 눈 -->
+                            <ellipse cx="60" cy="65" rx="6" ry="10" fill="green"/>
+                            <ellipse cx="90" cy="65" rx="6" ry="10" fill="green"/>
+                            <ellipse cx="60" cy="65" rx="3" ry="8" fill="black"/>
+                            <ellipse cx="90" cy="65" rx="3" ry="8" fill="black"/>
+                            
+                            <!-- 코 -->
+                            <polygon points="75,75 70,80 80,80" fill="pink"/>
+                            
+                            <!-- 입 -->
+                            <path d="M 75 82 Q 70 88 65 85" stroke="black" stroke-width="2" fill="none"/>
+                            <path d="M 75 82 Q 80 88 85 85" stroke="black" stroke-width="2" fill="none"/>
+                            
+                            <!-- 수염 -->
+                            <line x1="35" y1="70" x2="55" y2="72" stroke="black" stroke-width="1"/>
+                            <line x1="35" y1="80" x2="55" y2="78" stroke="black" stroke-width="1"/>
+                            <line x1="95" y1="72" x2="115" y2="70" stroke="black" stroke-width="1"/>
+                            <line x1="95" y1="78" x2="115" y2="80" stroke="black" stroke-width="1"/>
+                            
+                            <!-- 몸 -->
+                            <ellipse cx="75" cy="125" rx="28" ry="18" fill="${colors.main}"/>
+                        </svg>
+                    `;
+                }
+            },
+            
+            dog: {
+                name: '강아지',
+                colors: {
+                    main: '#DEB887',
+                    secondary: '#F5DEB3',
+                    inner: '#FFF8DC'
+                },
+                generateSVG: function(colors) {
+                    return `
+                        <svg width="150" height="150" viewBox="0 0 150 150">
+                            <!-- 머리 -->
+                            <ellipse cx="75" cy="70" rx="35" ry="40" fill="${colors.main}"/>
+                            
+                            <!-- 귀 (늘어진) -->
+                            <ellipse cx="50" cy="50" rx="15" ry="25" fill="${colors.secondary}"/>
+                            <ellipse cx="100" cy="50" rx="15" ry="25" fill="${colors.secondary}"/>
+                            
+                            <!-- 주둥이 -->
+                            <ellipse cx="75" cy="85" rx="18" ry="12" fill="${colors.inner}"/>
+                            
+                            <!-- 눈 -->
+                            <circle cx="65" cy="60" r="6" fill="black"/>
+                            <circle cx="85" cy="60" r="6" fill="black"/>
+                            <circle cx="67" cy="58" r="2" fill="white"/>
+                            <circle cx="87" cy="58" r="2" fill="white"/>
+                            
+                            <!-- 코 -->
+                            <circle cx="75" cy="80" r="3" fill="black"/>
+                            
+                            <!-- 입 -->
+                            <path d="M 75 85 Q 70 92 65 88" stroke="black" stroke-width="2" fill="none"/>
+                            <path d="M 75 85 Q 80 92 85 88" stroke="black" stroke-width="2" fill="none"/>
+                            
+                            <!-- 혀 -->
+                            <ellipse cx="75" cy="90" rx="4" ry="6" fill="pink"/>
+                            
+                            <!-- 몸 -->
+                            <ellipse cx="75" cy="125" rx="30" ry="20" fill="${colors.main}"/>
+                        </svg>
+                    `;
+                }
+            },
+            
+            rabbit: {
+                name: '토끼',
+                colors: {
+                    main: '#F5F5F5',
+                    secondary: '#E6E6FA',
+                    inner: '#FFB6C1'
+                },
+                generateSVG: function(colors) {
+                    return `
+                        <svg width="150" height="150" viewBox="0 0 150 150">
+                            <!-- 머리 -->
+                            <circle cx="75" cy="75" r="35" fill="${colors.main}"/>
+                            
+                            <!-- 긴 귀 -->
+                            <ellipse cx="60" cy="35" rx="8" ry="30" fill="${colors.main}"/>
+                            <ellipse cx="90" cy="35" rx="8" ry="30" fill="${colors.main}"/>
+                            <ellipse cx="60" cy="35" rx="4" ry="20" fill="${colors.inner}"/>
+                            <ellipse cx="90" cy="35" rx="4" ry="20" fill="${colors.inner}"/>
+                            
+                            <!-- 눈 -->
+                            <circle cx="65" cy="70" r="6" fill="black"/>
+                            <circle cx="85" cy="70" r="6" fill="black"/>
+                            <circle cx="67" cy="68" r="2" fill="white"/>
+                            <circle cx="87" cy="68" r="2" fill="white"/>
+                            
+                            <!-- 코 (Y자 모양) -->
+                            <path d="M 75 78 L 75 82 M 75 80 L 72 83 M 75 80 L 78 83" stroke="black" stroke-width="2" fill="none"/>
+                            
+                            <!-- 입 -->
+                            <path d="M 72 85 Q 75 88 78 85" stroke="black" stroke-width="2" fill="none"/>
+                            
+                            <!-- 앞니 -->
+                            <rect x="72" y="86" width="2" height="4" fill="white" stroke="black" stroke-width="0.5"/>
+                            <rect x="76" y="86" width="2" height="4" fill="white" stroke="black" stroke-width="0.5"/>
+                            
+                            <!-- 몸 -->
+                            <ellipse cx="75" cy="125" rx="25" ry="18" fill="${colors.main}"/>
+                        </svg>
+                    `;
+                }
+            },
+            
+            fox: {
+                name: '여우',
+                colors: {
+                    main: '#FF8C00',
+                    secondary: '#FF7F50',
+                    inner: '#FFF8DC'
+                },
+                generateSVG: function(colors) {
+                    return `
+                        <svg width="150" height="150" viewBox="0 0 150 150">
+                            <!-- 머리 -->
+                            <polygon points="75,40 95,75 75,90 55,75" fill="${colors.main}"/>
+                            
+                            <!-- 귀 (뾰족한) -->
+                            <polygon points="55,45 45,25 65,35" fill="${colors.main}"/>
+                            <polygon points="95,45 85,25 105,35" fill="${colors.main}"/>
+                            <polygon points="55,43 50,30 60,35" fill="black"/>
+                            <polygon points="95,43 90,30 100,35" fill="black"/>
+                            
+                            <!-- 얼굴 색상 -->
+                            <polygon points="75,50 85,70 75,80 65,70" fill="${colors.inner}"/>
+                            
+                            <!-- 눈 -->
+                            <ellipse cx="65" cy="65" rx="4" ry="6" fill="amber"/>
+                            <ellipse cx="85" cy="65" rx="4" ry="6" fill="amber"/>
+                            <ellipse cx="65" cy="65" rx="2" ry="5" fill="black"/>
+                            <ellipse cx="85" cy="65" rx="2" ry="5" fill="black"/>
+                            
+                            <!-- 코 -->
+                            <polygon points="75,75 72,78 78,78" fill="black"/>
+                            
+                            <!-- 입 -->
+                            <path d="M 75 80 Q 70 85 68 82" stroke="black" stroke-width="2" fill="none"/>
+                            <path d="M 75 80 Q 80 85 82 82" stroke="black" stroke-width="2" fill="none"/>
+                            
+                            <!-- 몸 -->
+                            <ellipse cx="75" cy="125" rx="28" ry="18" fill="${colors.main}"/>
+                        </svg>
+                    `;
+                }
+            },
+            
+            panda: {
+                name: '판다',
+                colors: {
+                    main: 'white',
+                    secondary: 'black',
+                    inner: '#FFF8DC'
+                },
+                generateSVG: function(colors) {
+                    return `
+                        <svg width="150" height="150" viewBox="0 0 150 150">
+                            <!-- 머리 -->
+                            <circle cx="75" cy="70" r="40" fill="${colors.main}"/>
+                            
+                            <!-- 귀 (검은색) -->
+                            <circle cx="50" cy="45" r="18" fill="${colors.secondary}"/>
+                            <circle cx="100" cy="45" r="18" fill="${colors.secondary}"/>
+                            
+                            <!-- 눈 주위 (검은색) -->
+                            <ellipse cx="60" cy="65" rx="12" ry="15" fill="${colors.secondary}"/>
+                            <ellipse cx="90" cy="65" rx="12" ry="15" fill="${colors.secondary}"/>
+                            
+                            <!-- 눈 -->
+                            <circle cx="60" cy="65" r="6" fill="white"/>
+                            <circle cx="90" cy="65" r="6" fill="white"/>
+                            <circle cx="60" cy="65" r="4" fill="black"/>
+                            <circle cx="90" cy="65" r="4" fill="black"/>
+                            
+                            <!-- 코 -->
+                            <ellipse cx="75" cy="78" rx="3" ry="2" fill="black"/>
+                            
+                            <!-- 입 -->
+                            <path d="M 75 82 Q 70 87 68 84" stroke="black" stroke-width="2" fill="none"/>
+                            <path d="M 75 82 Q 80 87 82 84" stroke="black" stroke-width="2" fill="none"/>
+                            
+                            <!-- 몸 -->
+                            <ellipse cx="75" cy="125" rx="30" ry="20" fill="${colors.main}"/>
+                        </svg>
+                    `;
+                }
+            },
+            
+            pig: {
+                name: '돼지',
+                colors: {
+                    main: '#FFB6C1',
+                    secondary: '#FFC0CB',
+                    inner: '#FF69B4'
+                },
+                generateSVG: function(colors) {
+                    return `
+                        <svg width="150" height="150" viewBox="0 0 150 150">
+                            <!-- 머리 -->
+                            <circle cx="75" cy="70" r="40" fill="${colors.main}"/>
+                            
+                            <!-- 귀 (작은 삼각형) -->
+                            <polygon points="55,40 45,25 60,30" fill="${colors.main}"/>
+                            <polygon points="95,40 90,25 105,30" fill="${colors.main}"/>
+                            
+                            <!-- 눈 -->
+                            <circle cx="60" cy="65" r="5" fill="black"/>
+                            <circle cx="90" cy="65" r="5" fill="black"/>
+                            <circle cx="62" cy="63" r="2" fill="white"/>
+                            <circle cx="92" cy="63" r="2" fill="white"/>
+                            
+                            <!-- 코 (돼지 특유의) -->
+                            <ellipse cx="75" cy="80" rx="8" ry="6" fill="${colors.inner}"/>
+                            <circle cx="70" cy="80" r="2" fill="black"/>
+                            <circle cx="80" cy="80" r="2" fill="black"/>
+                            
+                            <!-- 입 -->
+                            <path d="M 65 88 Q 75 92 85 88" stroke="black" stroke-width="2" fill="none"/>
+                            
+                            <!-- 몸 -->
+                            <ellipse cx="75" cy="125" rx="32" ry="22" fill="${colors.main}"/>
+                        </svg>
+                    `;
+                }
+            },
+            
+            frog: {
+                name: '개구리',
+                colors: {
+                    main: '#90EE90',
+                    secondary: '#98FB98',
+                    inner: '#FFFFE0'
+                },
+                generateSVG: function(colors) {
+                    return `
+                        <svg width="150" height="150" viewBox="0 0 150 150">
+                            <!-- 머리 -->
+                            <ellipse cx="75" cy="70" rx="40" ry="35" fill="${colors.main}"/>
+                            
+                            <!-- 튀어나온 눈 -->
+                            <circle cx="55" cy="50" r="15" fill="${colors.main}"/>
+                            <circle cx="95" cy="50" r="15" fill="${colors.main}"/>
+                            <circle cx="55" cy="50" r="10" fill="white"/>
+                            <circle cx="95" cy="50" r="10" fill="white"/>
+                            <circle cx="55" cy="50" r="6" fill="black"/>
+                            <circle cx="95" cy="50" r="6" fill="black"/>
+                            <circle cx="57" cy="48" r="2" fill="white"/>
+                            <circle cx="97" cy="48" r="2" fill="white"/>
+                            
+                            <!-- 배 -->
+                            <ellipse cx="75" cy="80" rx="25" ry="20" fill="${colors.inner}"/>
+                            
+                            <!-- 입 -->
+                            <path d="M 50 85 Q 75 95 100 85" stroke="black" stroke-width="3" fill="none"/>
+                            
+                            <!-- 몸 -->
+                            <ellipse cx="75" cy="125" rx="35" ry="20" fill="${colors.main}"/>
+                        </svg>
+                    `;
+                }
+            }
+        };
+
+        function generateAnimal(type, colors = null) {
+            const template = animalTemplates[type];
+            if (!template) return null;
+            
+            const animalColors = colors || template.colors;
+            
+            // 색상 변형을 위한 랜덤 요소 추가
+            if (!colors) {
+                const variation = Math.random() * 0.3 - 0.15; // -15% ~ +15% 변형
+                animalColors.main = adjustBrightness(animalColors.main, variation);
+                animalColors.secondary = adjustBrightness(animalColors.secondary, variation);
+            }
+            
+            return {
+                name: template.name,
+                svg: template.generateSVG(animalColors)
+            };
+        }
+
+        function adjustBrightness(color, percent) {
+            // 간단한 색상 밝기 조절 함수
+            const num = parseInt(color.replace("#", ""), 16);
+            const amt = Math.round(2.55 * percent * 100);
+            const R = (num >> 16) + amt;
+            const G = (num >> 8 & 0x00FF) + amt;
+            const B = (num & 0x0000FF) + amt;
+            return "#" + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+                (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+                (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
+        }
+
+        function addAnimalToGrid(animal) {
+            const grid = document.getElementById('animalsGrid');
+            const card = document.createElement('div');
+            card.className = 'animal-card';
+            card.innerHTML = `
+                ${animal.svg}
+                <div class="animal-name">${animal.name}</div>
+            `;
+            
+            // 클릭 시 동물 복제
+            card.addEventListener('click', () => {
+                const animalType = Object.keys(animalTemplates).find(key => 
+                    animalTemplates[key].name === animal.name
+                );
+                if (animalType) {
+                    const newAnimal = generateAnimal(animalType);
+                    addAnimalToGrid(newAnimal);
+                }
+            });
+            
+            grid.appendChild(card);
+        }
+
+        function generateSpecificAnimal(type) {
+            const animal = generateAnimal(type);
+            if (animal) {
+                addAnimalToGrid(animal);
+            }
+        }
+
+        function generateRandomAnimals() {
+            const animalTypes = Object.keys(animalTemplates);
+            const count = Math.floor(Math.random() * 4) + 3; // 3-6개의 동물
+            
+            for (let i = 0; i < count; i++) {
+                const randomType = animalTypes[Math.floor(Math.random() * animalTypes.length)];
+                setTimeout(() => {
+                    const animal = generateAnimal(randomType);
+                    addAnimalToGrid(animal);
+                }, i * 200); // 순차적으로 나타나는 효과
+            }
+        }
+
+        function clearAnimals() {
+            const grid = document.getElementById('animalsGrid');
+            grid.innerHTML = '';
+        }
+
+        // 페이지 로드 시 초기 동물들 생성
+        window.addEventListener('load', () => {
+            generateRandomAnimals();
+        });
+
+        // 키보드 단축키 추가
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'r' || e.key === 'R') {
+                generateRandomAnimals();
+            } else if (e.key === 'c' || e.key === 'C') {
+                clearAnimals();
+            }
+        });
+    </script>
+</body>
+</html>
