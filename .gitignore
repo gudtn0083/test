@@ -1,0 +1,257 @@
+# 🔒 보안 관련 파일들
+*.log
+*.key
+*.pem
+*.env
+.env
+.env.local
+.env.production
+secrets.json
+config.ini
+credentials.json
+
+# 🐍 Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# 🧠 AI 모델 캐시
+.cache/
+.huggingface/
+models/
+checkpoints/
+*.safetensors
+*.bin
+
+# 📁 생성된 파일들
+generated_animals/
+cute_*.png
+cute_*.jpg
+animal_collection/
+output/
+temp/
+tmp/
+
+# 🖥️ 시스템 파일
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# 📝 IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 🧪 테스트
+.tox/
+.nox/
+.coverage
+.pytest_cache/
+.hypothesis/
+htmlcov/
+.cache/
+
+# 📊 Jupyter Notebook
+.ipynb_checkpoints
+
+# 🌐 IPython
+profile_default/
+ipython_config.py
+
+# 🔧 pyenv
+.python-version
+
+# 📦 pipenv
+Pipfile.lock
+
+# 🎯 PEP 582
+__pypackages__/
+
+# 🔋 Celery
+celerybeat-schedule
+celerybeat.pid
+
+# 📡 SageMath
+*.sage.py
+
+# 🔌 Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# 🕷️ Scrapy
+.scrapy
+
+# 📚 Sphinx documentation
+docs/_build/
+
+# 🔨 PyBuilder
+target/
+
+# 📓 Jupyter Notebook
+.ipynb_checkpoints
+
+# 🔥 IPython
+profile_default/
+ipython_config.py
+
+# 🎪 pyenv
+.python-version
+
+# 🍃 pipenv
+Pipfile.lock
+
+# 🎨 PEP 582
+__pypackages__/
+
+# ⚡ Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# 🧮 SageMath parsed files
+*.sage.py
+
+# 🌍 Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# 🔍 Spyder project settings
+.spyderproject
+.spyproject
+
+# 🗂️ Rope project settings
+.ropeproject
+
+# 📖 mkdocs documentation
+/site
+
+# 🎯 mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# 🦆 Pyre type checker
+.pyre/
+
+# 🎪 Streamlit
+.streamlit/
+
+# 🚀 Node.js (웹 관련)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# 🔒 SSL 인증서
+*.crt
+*.csr
+*.key
+*.p12
+*.p7b
+*.p7r
+*.spc
+
+# 🗄️ 데이터베이스
+*.db
+*.sqlite
+*.sqlite3
+
+# 📋 백업 파일
+*.bak
+*.backup
+*.old
+*.orig
+
+# 🔧 설정 파일 (민감한 정보 포함 가능)
+local_settings.py
+settings_local.py
+config_local.py
+
+# 📊 성능 프로파일링
+*.prof
+
+# 🧹 임시 파일
+*.tmp
+*.temp
+.tmp/
+.temp/
+
+# 🚫 보안 스캔 결과
+security_report.json
+vulnerability_report.html
+bandit-report.json
+
+# 🎥 미디어 파일 (크기가 클 수 있음)
+*.mp4
+*.avi
+*.mov
+*.wmv
+*.mkv
+*.webm
+
+# 💾 대용량 파일
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# 🖼️ 이미지 (생성된 결과물 제외하고 일반적으로 큰 파일들)
+*.psd
+*.ai
+*.eps
+*.svg
+*.tiff
+*.tga
+*.bmp
+
+# 📱 모바일
+*.apk
+*.ipa
+
+# 🎮 게임 에셋
+*.unity
+*.unitypackage
+
+# 📺 비디오 캐시
+*.cache
+
+# 🔄 동기화 파일
+.sync/
+.dropbox/
