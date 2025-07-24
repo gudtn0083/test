@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>노래방 기계</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 -->
+        <header>
+            <h1><i class="fas fa-microphone"></i> 노래방 기계</h1>
+            <div class="header-controls">
+                <button id="adminBtn" class="btn btn-secondary">
+                    <i class="fas fa-cog"></i> 관리자
+                </button>
+            </div>
+        </header>
+
+        <!-- 메인 콘텐츠 -->
+        <main>
+            <!-- 검색 섹션 -->
+            <section class="search-section">
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="노래 제목 또는 가수명을 입력하세요">
+                    <button id="searchBtn" class="btn btn-primary">
+                        <i class="fas fa-search"></i> 검색
+                    </button>
+                </div>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">전체</button>
+                    <button class="filter-btn" data-filter="ballad">발라드</button>
+                    <button class="filter-btn" data-filter="dance">댄스</button>
+                    <button class="filter-btn" data-filter="rock">록</button>
+                    <button class="filter-btn" data-filter="trot">트로트</button>
+                    <button class="filter-btn" data-filter="pop">팝송</button>
+                </div>
+            </section>
+
+            <!-- 탭 메뉴 -->
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="songs">노래 목록</button>
+                <button class="tab-btn" data-tab="popular">인기 차트</button>
+                <button class="tab-btn" data-tab="queue">예약 대기열</button>
+            </div>
+
+            <!-- 탭 콘텐츠 -->
+            <div class="tab-content">
+                <!-- 노래 목록 탭 -->
+                <div id="songs-tab" class="tab-pane active">
+                    <div id="songsList" class="songs-grid">
+                        <!-- 노래 목록이 여기에 동적으로 로드됩니다 -->
+                    </div>
+                </div>
+
+                <!-- 인기 차트 탭 -->
+                <div id="popular-tab" class="tab-pane">
+                    <div id="popularList" class="popular-list">
+                        <!-- 인기 차트가 여기에 동적으로 로드됩니다 -->
+                    </div>
+                </div>
+
+                <!-- 예약 대기열 탭 -->
+                <div id="queue-tab" class="tab-pane">
+                    <div id="queueList" class="queue-list">
+                        <!-- 예약 대기열이 여기에 동적으로 로드됩니다 -->
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 현재 재생 중 -->
+        <div class="now-playing">
+            <h3><i class="fas fa-music"></i> 현재 재생 중</h3>
+            <div id="nowPlayingInfo">
+                <p>재생 중인 노래가 없습니다</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 예약 모달 -->
+    <div id="reserveModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>노래 예약</h2>
+            <div id="selectedSongInfo"></div>
+            <input type="text" id="userName" placeholder="이름을 입력하세요">
+            <button id="confirmReserve" class="btn btn-primary">예약하기</button>
+        </div>
+    </div>
+
+    <!-- 관리자 모달 -->
+    <div id="adminModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>노래 추가</h2>
+            <form id="addSongForm">
+                <input type="text" name="title" placeholder="노래 제목" required>
+                <input type="text" name="artist" placeholder="가수명" required>
+                <select name="genre">
+                    <option value="">장르 선택</option>
+                    <option value="ballad">발라드</option>
+                    <option value="dance">댄스</option>
+                    <option value="rock">록</option>
+                    <option value="trot">트로트</option>
+                    <option value="pop">팝송</option>
+                </select>
+                <input type="number" name="year" placeholder="발매년도">
+                <input type="number" name="duration" placeholder="재생시간(초)">
+                <div class="file-input">
+                    <label for="songFile">노래 파일:</label>
+                    <input type="file" id="songFile" name="song" accept="audio/*">
+                </div>
+                <div class="file-input">
+                    <label for="lyricsFile">가사 파일:</label>
+                    <input type="file" id="lyricsFile" name="lyrics" accept=".txt,.lrc">
+                </div>
+                <button type="submit" class="btn btn-primary">노래 추가</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
